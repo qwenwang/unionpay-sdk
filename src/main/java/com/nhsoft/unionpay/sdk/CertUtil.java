@@ -49,11 +49,11 @@ public class CertUtil {
 	private static Map<String, X509Certificate> certMap = new HashMap<String, X509Certificate>();
 	/** 商户私钥存储Map */
 	private final static Map<String, KeyStore> keyStoreMap = new ConcurrentHashMap<String, KeyStore>();
-	
+
 	static {
 		init();
 	}
-	
+
 	/**
 	 * 初始化所有证书.
 	 */
@@ -70,34 +70,31 @@ public class CertUtil {
 			LogUtil.writeErrorLog("init失败。（如果是用对称密钥签名的可无视此异常。）", e);
 		}
 	}
-	
+
 	/**
 	 * 添加签名，验签，加密算法提供者
 	 */
 	private static void addProvider(){
 		if (Security.getProvider("BC") == null) {
-			LogUtil.writeLog("add BC provider");
-			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+						Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		} else {
 			Security.removeProvider("BC"); //解决eclipse调试时tomcat自动重新加载时，BC存在不明原因异常的问题。
 			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-			LogUtil.writeLog("re-add BC provider");
-		}
+					}
 		printSysInfo();
 	}
-	
+
 	/**
 	 * 用配置文件acp_sdk.properties中配置的私钥路径和密码 加载签名证书
 	 */
 	private static void initSignCert() {
 		if(!"01".equals(SDKConfig.getConfig().getSignMethod())){
-			LogUtil.writeLog("非rsa签名方式，不加载签名证书。");
-			return;
+						return;
 		}
-		if (SDKConfig.getConfig().getSignCertPath() == null 
+		if (SDKConfig.getConfig().getSignCertPath() == null
 				|| SDKConfig.getConfig().getSignCertPwd() == null
 				|| SDKConfig.getConfig().getSignCertType() == null) {
-			LogUtil.writeErrorLog("WARN: " + SDKConfig.SDK_SIGNCERT_PATH + "或" + SDKConfig.SDK_SIGNCERT_PWD 
+			LogUtil.writeErrorLog("WARN: " + SDKConfig.SDK_SIGNCERT_PATH + "或" + SDKConfig.SDK_SIGNCERT_PWD
 					+ "或" + SDKConfig.SDK_SIGNCERT_TYPE + "为空。 停止加载签名证书。");
 			return;
 		}
@@ -108,8 +105,7 @@ public class CertUtil {
 			keyStore = getKeyInfo(SDKConfig.getConfig().getSignCertPath(),
 					SDKConfig.getConfig().getSignCertPwd(), SDKConfig
 							.getConfig().getSignCertType());
-			LogUtil.writeLog("InitSignCert Successful. CertId=["
-					+ getSignCertId() + "]");
+								+ getSignCertId() + "]");
 		} catch (IOException e) {
 			LogUtil.writeErrorLog("InitSignCert Error", e);
 		}
@@ -119,53 +115,42 @@ public class CertUtil {
 	 * 用配置文件acp_sdk.properties配置路径 加载敏感信息加密证书
 	 */
 	private static void initMiddleCert() {
-		LogUtil.writeLog("加载中级证书==>"+SDKConfig.getConfig().getMiddleCertPath());
-		if (!isEmpty(SDKConfig.getConfig().getMiddleCertPath())) {
+				if (!isEmpty(SDKConfig.getConfig().getMiddleCertPath())) {
 			middleCert = initCert(SDKConfig.getConfig().getMiddleCertPath());
-			LogUtil.writeLog("Load MiddleCert Successful");
-		} else {
-			LogUtil.writeLog("WARN: acpsdk.middle.path is empty");
-		}
+					} else {
+					}
 	}
 
 	/**
 	 * 用配置文件acp_sdk.properties配置路径 加载敏感信息加密证书
 	 */
 	private static void initRootCert() {
-		LogUtil.writeLog("加载根证书==>"+SDKConfig.getConfig().getRootCertPath());
-		if (!isEmpty(SDKConfig.getConfig().getRootCertPath())) {
+				if (!isEmpty(SDKConfig.getConfig().getRootCertPath())) {
 			rootCert = initCert(SDKConfig.getConfig().getRootCertPath());
-			LogUtil.writeLog("Load RootCert Successful");
-		} else {
-			LogUtil.writeLog("WARN: acpsdk.rootCert.path is empty");
-		}
+					} else {
+					}
 	}
-	
+
 	/**
 	 * 用配置文件acp_sdk.properties配置路径 加载银联公钥上级证书（中级证书）
 	 */
 	private static void initEncryptCert() {
-		LogUtil.writeLog("加载敏感信息加密证书==>"+SDKConfig.getConfig().getEncryptCertPath());
-		if (!isEmpty(SDKConfig.getConfig().getEncryptCertPath())) {
+				if (!isEmpty(SDKConfig.getConfig().getEncryptCertPath())) {
 			encryptCert = initCert(SDKConfig.getConfig().getEncryptCertPath());
-			LogUtil.writeLog("Load EncryptCert Successful");
-		} else {
-			LogUtil.writeLog("WARN: acpsdk.encryptCert.path is empty");
-		}
+					} else {
+					}
 	}
-	
+
 	/**
 	 * 用配置文件acp_sdk.properties配置路径 加载磁道公钥
 	 */
 	private static void initTrackKey() {
 		if (!isEmpty(SDKConfig.getConfig().getEncryptTrackKeyModulus())
 				&& !isEmpty(SDKConfig.getConfig().getEncryptTrackKeyExponent())) {
-			encryptTrackKey = getPublicKey(SDKConfig.getConfig().getEncryptTrackKeyModulus(), 
+			encryptTrackKey = getPublicKey(SDKConfig.getConfig().getEncryptTrackKeyModulus(),
 					SDKConfig.getConfig().getEncryptTrackKeyExponent());
-			LogUtil.writeLog("LoadEncryptTrackKey Successful");
-		} else {
-			LogUtil.writeLog("WARN: acpsdk.encryptTrackKey.modulus or acpsdk.encryptTrackKey.exponent is empty");
-		}
+					} else {
+					}
 	}
 
 	/**
@@ -173,13 +158,11 @@ public class CertUtil {
 	 */
 	private static void initValidateCertFromDir() {
 		if(!"01".equals(SDKConfig.getConfig().getSignMethod())){
-			LogUtil.writeLog("非rsa签名方式，不加载验签证书。");
-			return;
+						return;
 		}
 		certMap.clear();
 		String dir = SDKConfig.getConfig().getValidateCertDir();
-		LogUtil.writeLog("加载验证签名证书目录==>" + dir +" 注：如果请求报文中version=5.1.0那么此验签证书目录使用不到，可以不需要设置（version=5.0.0必须设置）。");
-		if (isEmpty(dir)) {
+				if (isEmpty(dir)) {
 			LogUtil.writeErrorLog("WARN: acpsdk.validateCert.dir is empty");
 			return;
 		}
@@ -208,8 +191,7 @@ public class CertUtil {
 				certMap.put(validateCert.getSerialNumber().toString(),
 						validateCert);
 				// 打印证书加载信息,供测试阶段调试
-				LogUtil.writeLog("[" + file.getAbsolutePath() + "][CertId="
-						+ validateCert.getSerialNumber().toString() + "]");
+										+ validateCert.getSerialNumber().toString() + "]");
 			} catch (CertificateException e) {
 				LogUtil.writeErrorLog("LoadVerifyCert Error", e);
 			}catch (FileNotFoundException e) {
@@ -224,12 +206,11 @@ public class CertUtil {
 				}
 			}
 		}
-		LogUtil.writeLog("LoadVerifyCert Finish");
-	}
+			}
 
 	/**
 	 * 用给定的路径和密码 加载签名证书，并保存到certKeyStoreMap
-	 * 
+	 *
 	 * @param certFilePath
 	 * @param certPwd
 	 */
@@ -238,8 +219,7 @@ public class CertUtil {
 		try {
 			keyStore = getKeyInfo(certFilePath, certPwd, "PKCS12");
 			keyStoreMap.put(certFilePath, keyStore);
-			LogUtil.writeLog("LoadRsaCert Successful");
-		} catch (IOException e) {
+					} catch (IOException e) {
 			LogUtil.writeErrorLog("LoadRsaCert Error", e);
 		}
 	}
@@ -252,18 +232,15 @@ public class CertUtil {
 	private static X509Certificate initCert(String path) {
 		X509Certificate encryptCertTemp = null;
 		CertificateFactory cf = null;
-		FileInputStream in = null;
+		InputStream in = null;
 		try {
 			cf = CertificateFactory.getInstance("X.509", "BC");
-			in = new FileInputStream(path);
+			in = CertUtil.class.getClassLoader().getResourceAsStream(path);
 			encryptCertTemp = (X509Certificate) cf.generateCertificate(in);
 			// 打印证书加载信息,供测试阶段调试
-			LogUtil.writeLog("[" + path + "][CertId="
-					+ encryptCertTemp.getSerialNumber().toString() + "]");
+								+ encryptCertTemp.getSerialNumber().toString() + "]");
 		} catch (CertificateException e) {
 			LogUtil.writeErrorLog("InitCert Error", e);
-		} catch (FileNotFoundException e) {
-			LogUtil.writeErrorLog("InitCert Error File Not Found", e);
 		} catch (NoSuchProviderException e) {
 			LogUtil.writeErrorLog("LoadVerifyCert Error No BC Provider", e);
 		} finally {
@@ -277,10 +254,10 @@ public class CertUtil {
 		}
 		return encryptCertTemp;
 	}
-	
+
 	/**
 	 * 通过keyStore 获取私钥签名证书PrivateKey对象
-	 * 
+	 *
 	 * @return
 	 */
 	public static PrivateKey getSignCertPrivateKey() {
@@ -306,7 +283,7 @@ public class CertUtil {
 	}
 	/**
 	 * 通过指定路径的私钥证书  获取PrivateKey对象
-	 * 
+	 *
 	 * @return
 	 */
 	public static PrivateKey getSignCertPrivateKeyByStoreMap(String certPath,
@@ -338,7 +315,7 @@ public class CertUtil {
 
 	/**
 	 * 获取敏感信息加密证书PublicKey
-	 * 
+	 *
 	 * @return
 	 */
 	public static PublicKey getEncryptCertPublicKey() {
@@ -355,17 +332,17 @@ public class CertUtil {
 			return encryptCert.getPublicKey();
 		}
 	}
-	
+
 	/**
 	 * 重置敏感信息加密证书公钥
 	 */
 	public static void resetEncryptCertPublicKey() {
 		encryptCert = null;
 	}
-	
+
 	/**
 	 * 获取磁道加密证书PublicKey
-	 * 
+	 *
 	 * @return
 	 */
 	public static PublicKey getEncryptTrackPublicKey() {
@@ -374,10 +351,10 @@ public class CertUtil {
 		}
 		return encryptTrackKey;
 	}
-	
+
 	/**
 	 * 通过certId获取验签证书Map中对应证书PublicKey
-	 * 
+	 *
 	 * @param certId 证书物理序号
 	 * @return 通过证书编号获取到的公钥
 	 */
@@ -400,10 +377,10 @@ public class CertUtil {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获取配置文件acp_sdk.properties中配置的签名私钥证书certId
-	 * 
+	 *
 	 * @return 证书的物理编号
 	 */
 	public static String getSignCertId() {
@@ -424,7 +401,7 @@ public class CertUtil {
 
 	/**
 	 * 获取敏感信息加密证书的certId
-	 * 
+	 *
 	 * @return
 	 */
 	public static String getEncryptCertId() {
@@ -444,7 +421,7 @@ public class CertUtil {
 
 	/**
 	 * 将签名私钥证书文件读取为证书存储对象
-	 * 
+	 *
 	 * @param pfxkeyfile
 	 *            证书文件名
 	 * @param keypwd
@@ -452,16 +429,14 @@ public class CertUtil {
 	 * @param type
 	 *            证书类型
 	 * @return 证书对象
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private static KeyStore getKeyInfo(String pfxkeyfile, String keypwd,
 			String type) throws IOException {
-		LogUtil.writeLog("加载签名证书==>" + pfxkeyfile);
-		FileInputStream fis = null;
+				InputStream fis = null;
 		try {
 			KeyStore ks = KeyStore.getInstance(type, "BC");
-			LogUtil.writeLog("Load RSA CertPath=[" + pfxkeyfile + "],Pwd=["+ keypwd + "],type=["+type+"]");
-			fis = new FileInputStream(pfxkeyfile);
+						fis = CertUtil.class.getClassLoader().getResourceAsStream(pfxkeyfile);
 			char[] nPassword = null;
 			nPassword = null == keypwd || "".equals(keypwd.trim()) ? null: keypwd.toCharArray();
 			if (null != ks) {
@@ -476,7 +451,7 @@ public class CertUtil {
 				fis.close();
 		}
 	}
-	
+
 	/**
 	 * 通过签名私钥证书路径，密码获取私钥证书certId
 	 * @param certPath
@@ -490,7 +465,7 @@ public class CertUtil {
 		}
 		return getCertIdIdByStore(keyStoreMap.get(certPath));
 	}
-	
+
 	/**
 	 * 通过keystore获取私钥证书的certId值
 	 * @param keyStore
@@ -512,10 +487,10 @@ public class CertUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 使用模和指数生成RSA公钥 注意：此代码用了默认补位方式，为RSA/None/PKCS1Padding，不同JDK默认的补位方式可能不同
-	 * 
+	 *
 	 * @param modulus
 	 *            模
 	 * @param exponent
@@ -534,26 +509,26 @@ public class CertUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 将字符串转换为X509Certificate对象.
-	 * 
+	 *
 	 * @param x509CertString
 	 * @return
 	 */
 	public static X509Certificate genCertificateByStr(String x509CertString) {
 		X509Certificate x509Cert = null;
 		try {
-			CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC"); 
+			CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
 			InputStream tIn = new ByteArrayInputStream(
 					x509CertString.getBytes("ISO-8859-1"));
 			x509Cert = (X509Certificate) cf.generateCertificate(tIn);
 		} catch (Exception e) {
-			LogUtil.writeErrorLog("gen certificate error", e);			
+			LogUtil.writeErrorLog("gen certificate error", e);
 		}
 		return x509Cert;
 	}
-	
+
 	/**
 	 * 从配置文件acp_sdk.properties中获取验签公钥使用的中级证书
 	 * @return
@@ -570,7 +545,7 @@ public class CertUtil {
 		}
 		return middleCert;
 	}
-	
+
 	/**
 	 * 从配置文件acp_sdk.properties中获取验签公钥使用的根证书
 	 * @return
@@ -594,7 +569,7 @@ public class CertUtil {
 	 * @return
 	 */
 	private static String getIdentitiesFromCertficate(X509Certificate aCert) {
-		String tDN = aCert.getSubjectDN().toString(); 
+		String tDN = aCert.getSubjectDN().toString();
 		String tPart = "";
 		if ((tDN != null)) {
 			String tSplitStr[] = tDN.substring(tDN.indexOf("CN=")).split("@");
@@ -604,59 +579,58 @@ public class CertUtil {
 		}
 		return tPart;
 	}
-	
+
 	/**
 	 * 验证书链。
 	 * @param cert
 	 * @return
 	 */
 	private static boolean verifyCertificateChain(X509Certificate cert){
-		
+
 		if ( null == cert) {
 			LogUtil.writeErrorLog("cert must Not null");
 			return false;
 		}
-		
+
 		X509Certificate middleCert = CertUtil.getMiddleCert();
 		if (null == middleCert) {
 			LogUtil.writeErrorLog("middleCert must Not null");
 			return false;
 		}
-		
+
 		X509Certificate rootCert = CertUtil.getRootCert();
 		if (null == rootCert) {
 			LogUtil.writeErrorLog("rootCert or cert must Not null");
 			return false;
 		}
-		
+
 		try {
-		
+
 	        X509CertSelector selector = new X509CertSelector();
 	        selector.setCertificate(cert);
-	        
+
 	        Set<TrustAnchor> trustAnchors = new HashSet<TrustAnchor>();
 	        trustAnchors.add(new TrustAnchor(rootCert, null));
 	        PKIXBuilderParameters pkixParams = new PKIXBuilderParameters(
 			        trustAnchors, selector);
-	
+
 	        Set<X509Certificate> intermediateCerts = new HashSet<X509Certificate>();
 	        intermediateCerts.add(rootCert);
 	        intermediateCerts.add(middleCert);
 	        intermediateCerts.add(cert);
-	        
+
 	        pkixParams.setRevocationEnabled(false);
-	
+
 	        CertStore intermediateCertStore = CertStore.getInstance("Collection",
 	                new CollectionCertStoreParameters(intermediateCerts), "BC");
 	        pkixParams.addCertStore(intermediateCertStore);
-	
+
 	        CertPathBuilder builder = CertPathBuilder.getInstance("PKIX", "BC");
-	        
+
         	@SuppressWarnings("unused")
 			PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) builder
                 .build(pkixParams);
-			LogUtil.writeLog("verify certificate chain succeed.");
-			return true;
+						return true;
         } catch (java.security.cert.CertPathBuilderException e){
 			LogUtil.writeErrorLog("verify certificate chain fail.", e);
 		} catch (Exception e) {
@@ -664,10 +638,10 @@ public class CertUtil {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 检查证书链
-	 * 
+	 *
 	 * @param rootCerts
 	 *            根证书
 	 * @param cert
@@ -675,7 +649,7 @@ public class CertUtil {
 	 * @return
 	 */
 	public static boolean verifyCertificate(X509Certificate cert) {
-		
+
 		if ( null == cert) {
 			LogUtil.writeErrorLog("cert must Not null");
 			return false;
@@ -690,7 +664,7 @@ public class CertUtil {
 			LogUtil.writeErrorLog("verifyCertificate fail", e);
 			return false;
 		}
-		
+
 		if(SDKConfig.getConfig().isIfValidateCNName()){
 			// 验证公钥是否属于银联
 			if(!UNIONPAY_CNNAME.equals(CertUtil.getIdentitiesFromCertficate(cert))) {
@@ -699,7 +673,7 @@ public class CertUtil {
 			}
 		} else {
 			// 验证公钥是否属于银联
-			if(!UNIONPAY_CNNAME.equals(CertUtil.getIdentitiesFromCertficate(cert)) 
+			if(!UNIONPAY_CNNAME.equals(CertUtil.getIdentitiesFromCertficate(cert))
 					&& !"00040000:SIGN".equals(CertUtil.getIdentitiesFromCertficate(cert))) {
 				LogUtil.writeErrorLog("cer owner is not CUP:" + CertUtil.getIdentitiesFromCertficate(cert));
 				return false;
@@ -712,35 +686,20 @@ public class CertUtil {
 	 * 打印系统环境信息
 	 */
 	private static void printSysInfo() {
-		LogUtil.writeLog("================= SYS INFO begin====================");
-		LogUtil.writeLog("os_name:" + System.getProperty("os.name"));
-		LogUtil.writeLog("os_arch:" + System.getProperty("os.arch"));
-		LogUtil.writeLog("os_version:" + System.getProperty("os.version"));
-		LogUtil.writeLog("java_vm_specification_version:"
-				+ System.getProperty("java.vm.specification.version"));
-		LogUtil.writeLog("java_vm_specification_vendor:"
-				+ System.getProperty("java.vm.specification.vendor"));
-		LogUtil.writeLog("java_vm_specification_name:"
-				+ System.getProperty("java.vm.specification.name"));
-		LogUtil.writeLog("java_vm_version:"
-				+ System.getProperty("java.vm.version"));
-		LogUtil.writeLog("java_vm_name:" + System.getProperty("java.vm.name"));
-		LogUtil.writeLog("java.version:" + System.getProperty("java.version"));
-		LogUtil.writeLog("java.vm.vendor=[" + System.getProperty("java.vm.vendor") + "]");
-		LogUtil.writeLog("java.version=[" + System.getProperty("java.version") + "]");
-		printProviders();
-		LogUtil.writeLog("================= SYS INFO end=====================");
-	}
+														+ System.getProperty("java.vm.specification.version"));
+						+ System.getProperty("java.vm.specification.vendor"));
+						+ System.getProperty("java.vm.specification.name"));
+						+ System.getProperty("java.vm.version"));
+										printProviders();
+			}
 	
 	/**
 	 * 打jre中印算法提供者列表
 	 */
 	private static void printProviders() {
-		LogUtil.writeLog("Providers List:");
-		Provider[] providers = Security.getProviders();
+				Provider[] providers = Security.getProviders();
 		for (int i = 0; i < providers.length; i++) {
-			LogUtil.writeLog(i + 1 + "." + providers[i].getName());
-		}
+					}
 	}
 
 	/**

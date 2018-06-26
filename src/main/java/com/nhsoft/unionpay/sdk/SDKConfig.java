@@ -90,7 +90,7 @@ public class SDKConfig {
 	private String jfSingleQueryUrl;
 	private String jfCardRequestUrl;
 	private String jfAppRequestUrl;
-	
+
 	private String qrcBackTransUrl;
 	private String qrcB2cIssBackTransUrl;
 	private String qrcB2cMerBackTransUrl;
@@ -129,8 +129,8 @@ public class SDKConfig {
 	public static final String QRC_B2C_ISS_BACK_TRANS_URL="acpsdk.qrcB2cIssBackTransUrl";
 	// 人到人
 	public static final String QRC_B2C_MER_BACK_TRANS_URL="acpsdk.qrcB2cMerBackTransUrl";
-	
-	
+
+
 	/** 配置文件中签名证书路径常量. */
 	public static final String SDK_SIGNCERT_PATH = "acpsdk.signCert.path";
 	/** 配置文件中签名证书密码常量. */
