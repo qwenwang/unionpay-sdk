@@ -104,8 +104,7 @@ public class AcpService {
 	public static Map<String,String> post(
 			Map<String, String> reqData,String reqUrl,String encoding) {
 		Map<String, String> rspData = new HashMap<String,String>();
-		LogUtil.writeLog("请求银联地址:" + reqUrl);
-		//发送后台请求数据
+				//发送后台请求数据
 		HttpClient hc = new HttpClient(reqUrl, 30000, 30000);
 		try {
 			int status = hc.send(reqData, encoding);
@@ -117,8 +116,7 @@ public class AcpService {
 					rspData.putAll(tmpRspData);
 				}
 			}else{
-				LogUtil.writeLog("返回http状态码["+status+"]，请检查请求报文或者请求地址是否正确");
-			}
+							}
 		} catch (Exception e) {
 			LogUtil.writeErrorLog(e.getMessage(), e);
 		}
@@ -133,8 +131,7 @@ public class AcpService {
 	 */
 	public static String get(String reqUrl,String encoding) {
 		
-		LogUtil.writeLog("请求银联地址:" + reqUrl);
-		//发送后台请求数据
+				//发送后台请求数据
 		HttpClient hc = new HttpClient(reqUrl, 30000, 30000);
 		try {
 			int status = hc.sendGet(encoding);
@@ -144,8 +141,7 @@ public class AcpService {
 					return resultString;
 				}
 			}else{
-				LogUtil.writeLog("返回http状态码["+status+"]，请检查请求报文或者请求地址是否正确");
-			}
+							}
 		} catch (Exception e) {
 			LogUtil.writeErrorLog(e.getMessage(), e);
 		}
@@ -318,8 +314,7 @@ public class AcpService {
 			String value = customerInfoMap.get(key);
 			if(key.equals("pin")){
 				if(null == accNo || "".equals(accNo.trim())){
-					LogUtil.writeLog("送了密码（PIN），必须在getCustomerInfo参数中上传卡号");
-					throw new RuntimeException("加密PIN没送卡号无法后续处理");
+										throw new RuntimeException("加密PIN没送卡号无法后续处理");
 				}else{
 					value = encryptPin(accNo,value,encoding);
 				}
@@ -329,8 +324,7 @@ public class AcpService {
 				sf.append(SDKConstants.AMPERSAND);
 		}
 		String customerInfo = sf.append("}").toString();
-		LogUtil.writeLog("组装的customerInfo明文："+customerInfo);
-		try {
+				try {
 			return new String(SecureUtil.base64Encode(sf.toString().getBytes(
 					encoding)),encoding);
 		} catch (UnsupportedEncodingException e) {
@@ -372,8 +366,7 @@ public class AcpService {
 			}else{
 				if(key.equals("pin")){
 					if(null == accNo || "".equals(accNo.trim())){
-						LogUtil.writeLog("送了密码（PIN），必须在getCustomerInfoWithEncrypt参数中上传卡号");
-						throw new RuntimeException("加密PIN没送卡号无法后续处理");
+												throw new RuntimeException("加密PIN没送卡号无法后续处理");
 					}else{
 						value = encryptPin(accNo,value,encoding);
 					}
@@ -384,15 +377,13 @@ public class AcpService {
 		
 		if(!encryptedInfoSb.toString().equals("")){
 			encryptedInfoSb.setLength(encryptedInfoSb.length()-1);//去掉最后一个&符号
-			LogUtil.writeLog("组装的customerInfo encryptedInfo明文："+ encryptedInfoSb.toString());
-			sf.append("encryptedInfo").append(SDKConstants.EQUAL).append(encryptData(encryptedInfoSb.toString(), encoding));
+						sf.append("encryptedInfo").append(SDKConstants.EQUAL).append(encryptData(encryptedInfoSb.toString(), encoding));
 		}else{
 			sf.setLength(sf.length()-1);
 		}
 		
 		String customerInfo = sf.append("}").toString();
-		LogUtil.writeLog("组装的customerInfo明文："+customerInfo);
-		try {
+				try {
 			return new String(SecureUtil.base64Encode(sf.toString().getBytes(encoding)),encoding);
 		} catch (UnsupportedEncodingException e) {
 			LogUtil.writeErrorLog(e.getMessage(), e);
@@ -414,8 +405,7 @@ public class AcpService {
 		try {
 				byte[] b = SecureUtil.base64Decode(customerInfo.getBytes(encoding));
 				String customerInfoNoBase64 = new String(b,encoding);
-				LogUtil.writeLog("解base64后===>" +customerInfoNoBase64);
-				//去掉前后的{}
+								//去掉前后的{}
 				customerInfoNoBase64 = customerInfoNoBase64.substring(1, customerInfoNoBase64.length()-1);
 				customerInfoMap = SDKUtil.parseQString(customerInfoNoBase64);
 				if(customerInfoMap.containsKey("encryptedInfo")){
@@ -446,8 +436,7 @@ public class AcpService {
 		try {
 				byte[] b = SecureUtil.base64Decode(customerInfo.getBytes(encoding));
 				String customerInfoNoBase64 = new String(b,encoding);
-				LogUtil.writeLog("解base64后===>" +customerInfoNoBase64);
-				//去掉前后的{}
+								//去掉前后的{}
 				customerInfoNoBase64 = customerInfoNoBase64.substring(1, customerInfoNoBase64.length()-1);
 				customerInfoMap = SDKUtil.parseQString(customerInfoNoBase64);
 				if(customerInfoMap.containsKey("encryptedInfo")){

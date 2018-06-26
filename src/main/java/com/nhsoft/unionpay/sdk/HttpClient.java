@@ -97,12 +97,10 @@ public class HttpClient {
 				throw new Exception("Create httpURLConnection Failure");
 			}
 			String sendData = this.getRequestParamString(data, encoding);
-			LogUtil.writeLog("请求报文:[" + sendData + "]");
-			this.requestServer(httpURLConnection, sendData,
+						this.requestServer(httpURLConnection, sendData,
 					encoding);
 			this.result = this.response(httpURLConnection, encoding);
-			LogUtil.writeLog("Response message:[" + result + "]");
-			return httpURLConnection.getResponseCode();
+						return httpURLConnection.getResponseCode();
 		} catch (Exception e) {
 			throw e;
 		}
@@ -122,8 +120,7 @@ public class HttpClient {
 				throw new Exception("创建联接失败");
 			}
 			this.result = this.response(httpURLConnection, encoding);
-			LogUtil.writeLog("同步返回报文:[" + result + "]");
-			return httpURLConnection.getResponseCode();
+						return httpURLConnection.getResponseCode();
 		} catch (Exception e) {
 			throw e;
 		}
@@ -176,8 +173,6 @@ public class HttpClient {
 				in = connection.getErrorStream();
 				sb.append(new String(read(in), encoding));
 			}
-			LogUtil.writeLog("HTTP Return Status-Code:["
-					+ connection.getResponseCode() + "]");
 			return sb.toString();
 		} catch (Exception e) {
 			throw e;
@@ -298,8 +293,7 @@ public class HttpClient {
 			}
 			reqstr = sf.substring(0, sf.length() - 1);
 		}
-		LogUtil.writeLog("Request Message:[" + reqstr + "]");
-		return reqstr;
+				return reqstr;
 	}
 
 }

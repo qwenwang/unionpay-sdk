@@ -68,7 +68,6 @@ public class SDKUtil {
 				data.put(SDKConstants.param_certId, CertUtil.getSignCertId());
 				// 将Map信息转换成key1=value1&key2=value2的形式
 				String stringData = coverMap2String(data);
-				LogUtil.writeLog("待签名请求报文串:[" + stringData + "]");
 				byte[] byteSign = null;
 				String stringSign = null;
 				try {
@@ -90,7 +89,6 @@ public class SDKUtil {
 				data.put(SDKConstants.param_certId, CertUtil.getSignCertId());
 				// 将Map信息转换成key1=value1&key2=value2的形式
 				String stringData = coverMap2String(data);
-				LogUtil.writeLog("待签名请求报文串:[" + stringData + "]");
 				byte[] byteSign = null;
 				String stringSign = null;
 				try {
@@ -150,7 +148,6 @@ public class SDKUtil {
 		if (SIGNMETHOD_SHA256.equals(signMethod)) {
 			// 将Map信息转换成key1=value1&key2=value2的形式
 			String stringData = coverMap2String(data);
-			LogUtil.writeLog("待签名请求报文串:[" + stringData + "]");
 			String strBeforeSha256 = stringData
 					+ SDKConstants.AMPERSAND
 					+ SecureUtil.sha256X16Str(secureKey, encoding);
@@ -161,7 +158,6 @@ public class SDKUtil {
 			return true;
 		} else if (SIGNMETHOD_SM3.equals(signMethod)) {
 			String stringData = coverMap2String(data);
-			LogUtil.writeLog("待签名请求报文串:[" + stringData + "]");
 			String strBeforeSM3 = stringData
 					+ SDKConstants.AMPERSAND
 					+ SecureUtil.sm3X16Str(secureKey, encoding);
@@ -213,7 +209,6 @@ public class SDKUtil {
 				data.put(SDKConstants.param_certId, CertUtil.getCertIdByKeyStoreMap(certPath, certPwd));
 				// 将Map信息转换成key1=value1&key2=value2的形式
 				String stringData = coverMap2String(data);
-				LogUtil.writeLog("待签名请求报文串:[" + stringData + "]");
 				byte[] byteSign = null;
 				String stringSign = null;
 				try {
@@ -235,7 +230,6 @@ public class SDKUtil {
 				data.put(SDKConstants.param_certId, CertUtil.getCertIdByKeyStoreMap(certPath, certPwd));
 				// 将Map信息转换成key1=value1&key2=value2的形式
 				String stringData = coverMap2String(data);
-				LogUtil.writeLog("待签名请求报文串:[" + stringData + "]");
 				byte[] byteSign = null;
 				String stringSign = null;
 				try {
@@ -268,7 +262,6 @@ public class SDKUtil {
 	 * @return
 	 */
 	public static boolean validateBySecureKey(Map<String, String> resData, String secureKey, String encoding) {
-		LogUtil.writeLog("验签处理开始");
 		if (isEmpty(encoding)) {
 			encoding = "UTF-8";
 		}
@@ -276,10 +269,8 @@ public class SDKUtil {
 		if (SIGNMETHOD_SHA256.equals(signMethod)) {
 			// 1.进行SHA256验证
 			String stringSign = resData.get(SDKConstants.param_signature);
-			LogUtil.writeLog("签名原文：["+stringSign+"]");
 			// 将Map信息转换成key1=value1&key2=value2的形式
 			String stringData = coverMap2String(resData);
-			LogUtil.writeLog("待验签返回报文串：["+stringData+"]");
 			String strBeforeSha256 = stringData
 					+ SDKConstants.AMPERSAND
 					+ SecureUtil.sha256X16Str(secureKey, encoding);
@@ -289,10 +280,8 @@ public class SDKUtil {
 		} else if (SIGNMETHOD_SM3.equals(signMethod)) {
 			// 1.进行SM3验证
 			String stringSign = resData.get(SDKConstants.param_signature);
-			LogUtil.writeLog("签名原文：["+stringSign+"]");
 			// 将Map信息转换成key1=value1&key2=value2的形式
 			String stringData = coverMap2String(resData);
-			LogUtil.writeLog("待验签返回报文串：["+stringData+"]");
 			String strBeforeSM3 = stringData
 					+ SDKConstants.AMPERSAND
 					+ SecureUtil.sm3X16Str(secureKey, encoding);
@@ -313,7 +302,6 @@ public class SDKUtil {
 	 * @return
 	 */
 	public static boolean validate(Map<String, String> resData, String encoding) {
-		LogUtil.writeLog("验签处理开始");
 		if (isEmpty(encoding)) {
 			encoding = "UTF-8";
 		}
@@ -323,13 +311,10 @@ public class SDKUtil {
 			// 获取返回报文的版本号
 			if (VERSION_5_0_0.equals(version) || VERSION_1_0_0.equals(version) || VERSION_5_0_1.equals(version)) {
 				String stringSign = resData.get(SDKConstants.param_signature);
-				LogUtil.writeLog("签名原文：["+stringSign+"]");
 				// 从返回报文中获取certId ，然后去证书静态Map中查询对应验签证书对象
 				String certId = resData.get(SDKConstants.param_certId);
-				LogUtil.writeLog("对返回报文串验签使用的验签公钥序列号：["+certId+"]");
 				// 将Map信息转换成key1=value1&key2=value2的形式
 				String stringData = coverMap2String(resData);
-				LogUtil.writeLog("待验签返回报文串：["+stringData+"]");
 				try {
 					// 验证签名需要用银联发给商户的公钥证书.
 					return SecureUtil.validateSignBySoft(CertUtil
@@ -344,7 +329,6 @@ public class SDKUtil {
 			} else if (VERSION_5_1_0.equals(version)) {
 				// 1.从返回报文中获取公钥信息转换成公钥对象
 				String strCert = resData.get(SDKConstants.param_signPubKeyCert);
-//				LogUtil.writeLog("验签公钥证书：["+strCert+"]");
 				X509Certificate x509Cert = CertUtil.genCertificateByStr(strCert);
 				if(x509Cert == null) {
 					LogUtil.writeErrorLog("convert signPubKeyCert failed");
@@ -358,17 +342,14 @@ public class SDKUtil {
 
 				// 3.验签
 				String stringSign = resData.get(SDKConstants.param_signature);
-				LogUtil.writeLog("签名原文：["+stringSign+"]");
 				// 将Map信息转换成key1=value1&key2=value2的形式
 				String stringData = coverMap2String(resData);
-				LogUtil.writeLog("待验签返回报文串：["+stringData+"]");
 				try {
 					// 验证签名需要用银联发给商户的公钥证书.
 					boolean result = SecureUtil.validateSignBySoft256(x509Cert
 							.getPublicKey(), SecureUtil.base64Decode(stringSign
 							.getBytes(encoding)), SecureUtil.sha256X16(
 							stringData, encoding));
-					LogUtil.writeLog("验证签名" + (result? "成功":"失败"));
 					return result;
 				} catch (UnsupportedEncodingException e) {
 					LogUtil.writeErrorLog(e.getMessage(), e);
@@ -380,10 +361,8 @@ public class SDKUtil {
 		} else if (SIGNMETHOD_SHA256.equals(signMethod)) {
 			// 1.进行SHA256验证
 			String stringSign = resData.get(SDKConstants.param_signature);
-			LogUtil.writeLog("签名原文：["+stringSign+"]");
 			// 将Map信息转换成key1=value1&key2=value2的形式
 			String stringData = coverMap2String(resData);
-			LogUtil.writeLog("待验签返回报文串：["+stringData+"]");
 			String strBeforeSha256 = stringData
 					+ SDKConstants.AMPERSAND
 					+ SecureUtil.sha256X16Str(SDKConfig.getConfig()
@@ -391,15 +370,12 @@ public class SDKUtil {
 			String strAfterSha256 = SecureUtil.sha256X16Str(strBeforeSha256,
 					encoding);
 			boolean result =  stringSign.equals(strAfterSha256);
-			LogUtil.writeLog("验证签名" + (result? "成功":"失败"));
 			return result;
 		} else if (SIGNMETHOD_SM3.equals(signMethod)) {
 			// 1.进行SM3验证
 			String stringSign = resData.get(SDKConstants.param_signature);
-			LogUtil.writeLog("签名原文：["+stringSign+"]");
 			// 将Map信息转换成key1=value1&key2=value2的形式
 			String stringData = coverMap2String(resData);
-			LogUtil.writeLog("待验签返回报文串：["+stringData+"]");
 			String strBeforeSM3 = stringData
 					+ SDKConstants.AMPERSAND
 					+ SecureUtil.sm3X16Str(SDKConfig.getConfig()
@@ -407,7 +383,6 @@ public class SDKUtil {
 			String strAfterSM3 = SecureUtil
 					.sm3X16Str(strBeforeSM3, encoding);
 			boolean result =  stringSign.equals(strAfterSM3);
-			LogUtil.writeLog("验证签名" + (result? "成功":"失败"));
 			return result;
 		}
 		return false;
@@ -583,7 +558,6 @@ public class SDKUtil {
 				// 2.备份成功,进行新证书的存储
 				if (!writeFile(localCertPath, strCert, encoding))
 					return -1;
-				LogUtil.writeLog("save new encryptPubKeyCert success");
 				CertUtil.resetEncryptCertPublicKey();
 				return 1;
 			}else {
@@ -603,14 +577,12 @@ public class SDKUtil {
 //				// 2.备份成功,进行新证书的存储
 //				if (!writeFile(localCertPath, strCert, encoding))
 //					return -1;
-//				LogUtil.writeLog("save new encryptPubKeyCert success");
 //				CertUtil.resetEncryptTrackCertPublicKey();
 //				return 1;
 //			}else {
 				return 0;
 //			}
 		}else {
-			LogUtil.writeLog("unknown cerType:"+certType);
 			return -1;
 		}
 	}
@@ -776,7 +748,6 @@ public class SDKUtil {
 	 * @return
 	 */
 	public static Map<String, String> filterBlank(Map<String, String> contentData){
-		LogUtil.writeLog("打印请求报文域 :");
 		Map<String, String> submitFromData = new HashMap<String, String>();
 		Set<String> keyset = contentData.keySet();
 
@@ -785,7 +756,6 @@ public class SDKUtil {
 			if (StringUtils.isNotBlank(value)) {
 				// 对value值进行去除前后空处理
 				submitFromData.put(key, value.trim());
-				LogUtil.writeLog(key + "-->" + String.valueOf(value));
 			}
 		}
 		return submitFromData;

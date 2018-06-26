@@ -199,8 +199,7 @@ public class SDKConfig {
 	 */
 	public void loadPropertiesFromPath(String rootPath) {
 		if (StringUtils.isNotBlank(rootPath)) {
-			LogUtil.writeLog("从路径读取配置文件: " + rootPath+File.separator+FILE_NAME);
-			File file = new File(rootPath + File.separator + FILE_NAME);
+						File file = new File(rootPath + File.separator + FILE_NAME);
 			InputStream in = null;
 			if (file.exists()) {
 				try {
@@ -237,8 +236,7 @@ public class SDKConfig {
 	public void loadPropertiesFromSrc() {
 		InputStream in = null;
 		try {
-			LogUtil.writeLog("从classpath: " +SDKConfig.class.getClassLoader().getResource("").getPath()+" 获取属性文件"+FILE_NAME);
-			in = SDKConfig.class.getClassLoader().getResourceAsStream(FILE_NAME);
+						in = SDKConfig.class.getClassLoader().getResourceAsStream(FILE_NAME);
 			if (null != in) {
 				properties = new Properties();
 				try {
@@ -270,34 +268,28 @@ public class SDKConfig {
 	 * @param pro
 	 */
 	public void loadProperties(Properties pro) {
-		LogUtil.writeLog("开始从属性文件中加载配置项");
-		String value = null;
+				String value = null;
 		
 		value = pro.getProperty(SDK_SIGNCERT_PATH);
 		if (!SDKUtil.isEmpty(value)) {
 			this.signCertPath = value.trim();
-			LogUtil.writeLog("配置项：私钥签名证书路径==>"+SDK_SIGNCERT_PATH +"==>"+ value+" 已加载");
-		}
+					}
 		value = pro.getProperty(SDK_SIGNCERT_PWD);
 		if (!SDKUtil.isEmpty(value)) {
 			this.signCertPwd = value.trim();
-			LogUtil.writeLog("配置项：私钥签名证书密码==>"+SDK_SIGNCERT_PWD +" 已加载");
-		}
+					}
 		value = pro.getProperty(SDK_SIGNCERT_TYPE);
 		if (!SDKUtil.isEmpty(value)) {
 			this.signCertType = value.trim();
-			LogUtil.writeLog("配置项：私钥签名证书类型==>"+SDK_SIGNCERT_TYPE +"==>"+ value+" 已加载");
-		}
+					}
 		value = pro.getProperty(SDK_ENCRYPTCERT_PATH);
 		if (!SDKUtil.isEmpty(value)) {
 			this.encryptCertPath = value.trim();
-			LogUtil.writeLog("配置项：敏感信息加密证书==>"+SDK_ENCRYPTCERT_PATH +"==>"+ value+" 已加载");
-		}
+					}
 		value = pro.getProperty(SDK_VALIDATECERT_DIR);
 		if (!SDKUtil.isEmpty(value)) {
 			this.validateCertDir = value.trim();
-			LogUtil.writeLog("配置项：验证签名证书路径(这里配置的是目录，不要指定到公钥文件)==>"+SDK_VALIDATECERT_DIR +"==>"+ value+" 已加载");
-		}
+					}
 		value = pro.getProperty(SDK_FRONT_URL);
 		if (!SDKUtil.isEmpty(value)) {
 			this.frontRequestUrl = value.trim();

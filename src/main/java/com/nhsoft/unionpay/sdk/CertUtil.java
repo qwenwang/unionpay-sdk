@@ -81,7 +81,6 @@ public class CertUtil {
 			Security.removeProvider("BC"); //解决eclipse调试时tomcat自动重新加载时，BC存在不明原因异常的问题。
 			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 					}
-		printSysInfo();
 	}
 
 	/**
@@ -105,7 +104,6 @@ public class CertUtil {
 			keyStore = getKeyInfo(SDKConfig.getConfig().getSignCertPath(),
 					SDKConfig.getConfig().getSignCertPwd(), SDKConfig
 							.getConfig().getSignCertType());
-								+ getSignCertId() + "]");
 		} catch (IOException e) {
 			LogUtil.writeErrorLog("InitSignCert Error", e);
 		}
@@ -191,7 +189,6 @@ public class CertUtil {
 				certMap.put(validateCert.getSerialNumber().toString(),
 						validateCert);
 				// 打印证书加载信息,供测试阶段调试
-										+ validateCert.getSerialNumber().toString() + "]");
 			} catch (CertificateException e) {
 				LogUtil.writeErrorLog("LoadVerifyCert Error", e);
 			}catch (FileNotFoundException e) {
@@ -238,7 +235,6 @@ public class CertUtil {
 			in = CertUtil.class.getClassLoader().getResourceAsStream(path);
 			encryptCertTemp = (X509Certificate) cf.generateCertificate(in);
 			// 打印证书加载信息,供测试阶段调试
-								+ encryptCertTemp.getSerialNumber().toString() + "]");
 		} catch (CertificateException e) {
 			LogUtil.writeErrorLog("InitCert Error", e);
 		} catch (NoSuchProviderException e) {
@@ -680,26 +676,6 @@ public class CertUtil {
 			}
 		}
 		return true;		
-	}
-
-	/**
-	 * 打印系统环境信息
-	 */
-	private static void printSysInfo() {
-														+ System.getProperty("java.vm.specification.version"));
-						+ System.getProperty("java.vm.specification.vendor"));
-						+ System.getProperty("java.vm.specification.name"));
-						+ System.getProperty("java.vm.version"));
-										printProviders();
-			}
-	
-	/**
-	 * 打jre中印算法提供者列表
-	 */
-	private static void printProviders() {
-				Provider[] providers = Security.getProviders();
-		for (int i = 0; i < providers.length; i++) {
-					}
 	}
 
 	/**
